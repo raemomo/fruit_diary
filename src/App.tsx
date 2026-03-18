@@ -85,7 +85,7 @@ function BasketCard({ y, m, d, text, theme, question }: {
   );
 }
 
-function Header({ theme, userPhoto, onLogout, onBasket }: { theme: (typeof MONTHLY_THEMES)[0]; userPhoto: string | null; onLogout: () => void; onBasket: () => void; }) {
+function Header({ theme, userPhoto, onLogout, onBasket, onTitleClick }: { theme: (typeof MONTHLY_THEMES)[0]; userPhoto: string | null; onLogout: () => void; onBasket: () => void; onTitleClick: () => void; }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
@@ -98,7 +98,9 @@ function Header({ theme, userPhoto, onLogout, onBasket }: { theme: (typeof MONTH
   />
 )}
       <div className="flex justify-between items-center mb-6 px-2 mt-4 relative z-50">
-        <h1 className={`text-2xl font-extrabold transition-colors duration-500 ${theme.colors.textMain}`}>일기장 {theme.emoji}</h1>
+        <h1 onClick={onTitleClick}
+          className={`text-2xl font-extrabold transition-colors duration-500 ${theme.colors.textMain}`}>일기장 {theme.emoji}
+          </h1>
         <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400 cursor-pointer hover:shadow-md transition overflow-hidden border-2 border-transparent">
           {userPhoto ? <img src={userPhoto} alt="profile" className="w-full h-full object-cover" /> : "👤"}
         </div>
@@ -581,7 +583,13 @@ export default function App() {
       <div className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${MONTHLY_THEMES[viewingMonth].colors.bg}`}
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4">
-        <Header theme={MONTHLY_THEMES[viewingMonth]} userPhoto={userPhoto} onLogout={handleLogout} onBasket={() => setShowBasket(true)} />        </div>
+        <Header 
+          theme={MONTHLY_THEMES[viewingMonth]} 
+          userPhoto={userPhoto} onLogout={handleLogout}
+          onBasket={() => setShowBasket(true)} 
+          onTitleClick={() => changeMonthAndSelectDate(REAL_YEAR, REAL_MONTH)}
+        />        
+        </div>
       </div>
   
       {/* 스크롤 콘텐츠 — 헤더 높이만큼 밀어내기 */}
