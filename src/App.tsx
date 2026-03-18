@@ -76,7 +76,7 @@ function BasketCard({ y, m, d, text, theme, question }: {
 
       {/* 날짜 및 기록완료 */}
       <div className="flex justify-between items-center">
-        <span className={`font-bold text-sm ${theme.colors.textSub}`}>{y}년 {m}월 {d}일</span>
+        <span className={`font-bold text-sm ${theme.colors.textSub}`}>{y}년 {m + 1}월 {d}일</span>
         <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${theme.colors.accentBg} ${theme.colors.accentText}`}>
           {theme.emoji} 기록 완료
         </span>
@@ -559,7 +559,7 @@ export default function App() {
             ) : (
               sortedDiaries.map(([dateKey, text]) => {
                 const [y, m, d] = dateKey.split('-').map(Number);
-                const themeIndex = Math.max(0, Math.min(m - 1, 11));
+                const themeIndex = Math.max(0, Math.min(m , 11));
                 const theme = MONTHLY_THEMES[themeIndex];
                 const question = MONTHLY_QUESTIONS[d - 1] || "오늘의 질문";
                 return (
