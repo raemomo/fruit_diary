@@ -218,7 +218,7 @@ useEffect(() => {
         {/* 질문 */}
         <div className={`rounded-2xl py-3 transition-colors duration-500`}>
           <h2 className={`font-black text-lg flex items-center gap-2 transition-colors duration-500 ${theme.colors.textMain}`}>
-            {`"${selectedDate.question}"`}
+            {`✎ "${selectedDate.question}"`}
           </h2>
         </div>
         {/* 오늘의 답변 */}
