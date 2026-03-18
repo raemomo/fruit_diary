@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Pen+Script&display=swap");
+
+body {
+  /* font-family: "Gowun Dodum", sans-serif; */
+  /* font-family: "Hi Melody", sans-serif; */
+  font-family: "Gaegu", sans-serif;
+  /* font-family: "Nanum Pen Script", sans-serif; */
+  /* font-family: "Yeon Sung", sans-serif; */
+  -webkit-overflow-scrolling: touch;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes burst {
+  0% { transform: translate(0, 0) rotate(0deg) scale(0.5); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(1.2); opacity: 0; }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
