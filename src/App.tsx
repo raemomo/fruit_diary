@@ -51,36 +51,59 @@ interface DateInfo {
 // ==========================================
 // 2. UI 컴포넌트들
 // ==========================================
+
 function BasketCard({ y, m, d, text, theme, question }: {
   y: number; m: number; d: number; text: string; theme: (typeof MONTHLY_THEMES)[0]; question: string;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={`bg-white rounded-3xl p-5 shadow-sm border ${theme.colors.border}`}>
-      {/* 질문 */}
-      <h2 className={`font-black text-lg mb-3 ${theme.colors.textMain}`}>{`"${question}"`}</h2>
+    <div className="relative mb-8">
+      {/* 뒤 종이 2장 */}
+      <div className={`absolute inset-0 rounded-3xl border-2 ${theme.colors.border}`} 
+        style={{ backgroundColor: '#fdfcfa', transform: 'rotate(1.5deg) translateY(4px)' }} />
+      <div className={`absolute inset-0 rounded-3xl border-2 ${theme.colors.border}`}
+        style={{ backgroundColor: '#fdfcfa', transform: 'rotate(-1deg) translateY(2px)', opacity: 0.7 }} />
 
-      {/* 대답 — 클릭하면 펼쳐짐 */}
-      <div
-        className={`rounded-2xl p-4 transition-all duration-300 cursor-pointer ${theme.colors.inputBg}`}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <p className={`text-gray-700 font-medium whitespace-pre-wrap transition-all duration-300 ${!isExpanded ? 'line-clamp-3' : ''}`}>
-          {text}
-        </p>
+      {/* 메인 카드 */}
+      <div className={`relative rounded-3xl p-5 pt-8 border-2 ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa' }}>
+        
+        {/* 스프링 링 */}
+        <div className="absolute top-0 left-0 right-0 flex justify-center gap-5 -translate-y-3">
+          {[...Array(7)].map((_, i) => (
+            <div key={i} className={`w-5 h-5 rounded-full border-4 bg-white`} 
+              style={{ borderColor: '#1A1110' }}
+              />
+          ))}
+        </div>
+
+        {/* 질문 */}
+        <h2 className={`font-black text-lg mb-3 ${theme.colors.textMain}`}>{`"${question}"`}</h2>
+
+        {/* 대답 */}
+        <div
+          className={`rounded-2xl p-4 transition-all duration-300 cursor-pointer ${theme.colors.inputBg}`}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <p className={`text-gray-700 font-medium whitespace-pre-wrap transition-all duration-300 ${!isExpanded ? 'line-clamp-3' : ''}`}>
+            {text}
+          </p>
+        </div>
+
+        {/* 디바이더 */}
+        <div className="w-full h-px my-3 bg-gray-200 opacity-50" />
+
+        {/* 날짜 및 기록완료 */}
+        <div className="flex justify-between items-center">
+          <span className={`font-bold text-sm ${theme.colors.textSub}`}>{y}년 {m + 1}월 {d}일</span>
+          <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${theme.colors.accentBg} ${theme.colors.accentText}`}>
+            {theme.emoji} 기록 완료
+          </span>
+        </div>
       </div>
 
-      {/* 디바이더 */}
-      <div className="w-full h-px my-3 bg-gray-200 opacity-50" />
-
-      {/* 날짜 및 기록완료 */}
-      <div className="flex justify-between items-center">
-        <span className={`font-bold text-sm ${theme.colors.textSub}`}>{y}년 {m + 1}월 {d}일</span>
-        <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${theme.colors.accentBg} ${theme.colors.accentText}`}>
-          {theme.emoji} 기록 완료
-        </span>
-      </div>
+      {/* 스프링 막대 */}
+      <div className={`absolute top-[-2px] left-6 right-6 h-2 rounded-full opacity-30 ${theme.colors.btn}`} />
     </div>
   );
 }
@@ -131,8 +154,9 @@ function DetailCard({ selectedDate, initialText, onSave }: { selectedDate: DateI
   // selectedDate.year === REAL_YEAR && 
   // selectedDate.month === REAL_MONTH && 
   // selectedDate.date === REAL_DATE - 1;
-
-  const isEditable = selectedDate.isToday 
+  // 여기가 모든 게시물 수정으로 할지 오늘만 할지 결정하는 변수
+  const isEditable = true; 
+  // selectedDate.isToday 
   // || isYesterday;  
   const theme = selectedDate.theme;
   const dateKey = `${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`;
@@ -543,18 +567,18 @@ export default function App() {
       });
   
     return (
-      <div className="min-h-screen text-gray-800" style={{ backgroundColor: '#ffffff' }}>
+      <div className="min-h-screen text-gray-800" style={{ backgroundColor: '#fdfcfa' }}>
   {/* 헤더 */}
   <div className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#8B6343', paddingTop: 'env(safe-area-inset-top)' }}>
-    <div className="px-4 flex items-center gap-3 py-4">
-      <button onClick={() => setShowBasket(false)} className="font-bold text-xl text-white">←</button>
-      <h1 className="text-2xl font-extrabold text-white">과일 바구니</h1>
+    <div className="px-4 flex items-center py-4 relative">
+      <button onClick={() => setShowBasket(false)} className="font-bold text-xl text-white absolute left-4">＜</button>
+      <h1 className="text-2xl font-extrabold text-white w-full text-center">과일 바구니</h1>
     </div>
   </div>
   
         {/* 카드 목록 */}
         <div className="px-4 flex flex-col items-center"
-          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 70px)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 90px)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
           <div className="w-full max-w-md flex flex-col gap-4">
             {sortedDiaries.length === 0 ? (
               <p className={`text-center mt-20 ${MONTHLY_THEMES[REAL_MONTH].colors.textSub}`}>아직 기록이 없어요 🥲</p>
