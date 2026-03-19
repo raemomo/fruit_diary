@@ -18,6 +18,11 @@ body {
   display: none;
 }
 
+body::before {
+  content: '';
+  position: absolute;
+}
+
 @keyframes burst {
   0% { transform: translate(0, 0) rotate(0deg) scale(0.5); opacity: 1; }
   60% { opacity: 1; }

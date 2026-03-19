@@ -4,6 +4,8 @@ import { FirebaseFirestore } from '@capacitor-firebase/firestore';
 import { Capacitor } from '@capacitor/core';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from './firebase';
+import { CalendarDays, Server } from 'lucide-react'; // ← 여기 추가
+
 
 // ==========================================
 // 📂 1. 컬러 및 테마 설정
@@ -58,28 +60,40 @@ function BasketCard({ y, m, d, text, theme, question }: {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="relative mb-8">
+    <div className="relative mb-2 mt-6">
       {/* 뒤 종이 2장 */}
       <div className={`absolute inset-0 rounded-3xl border-2 ${theme.colors.border}`} 
         style={{ backgroundColor: '#fdfcfa', transform: 'rotate(1.5deg) translateY(4px)' }} />
       <div className={`absolute inset-0 rounded-3xl border-2 ${theme.colors.border}`}
         style={{ backgroundColor: '#fdfcfa', transform: 'rotate(-1deg) translateY(2px)', opacity: 0.7 }} />
-
+  
       {/* 메인 카드 */}
-      <div className={`relative rounded-3xl p-5 pt-8 border-2 ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa' }}>
+      <div className={`relative rounded-3xl p-5 pt-10 border-2 ${theme.colors.border}`} 
+        style={{ backgroundColor: '#fdfcfa',
+          filter: 'url(#wobble)'
+        }}
         
-        {/* 스프링 링 */}
-        <div className="absolute top-0 left-0 right-0 flex justify-center gap-5 -translate-y-3">
-          {[...Array(7)].map((_, i) => (
-            <div key={i} className={`w-5 h-5 rounded-full border-4 bg-white`} 
-              style={{ borderColor: '#1A1110' }}
-              />
-          ))}
-        </div>
+        >
+        
+        {/* 구멍 뚫린 종이 상단 */}
+          <div className="absolute top-3 left-0 right-0 flex justify-center gap-4">
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className="w-3 h-3 rounded-full" 
+                style={{ backgroundColor: '#e8e4df' }} />
+            ))}
+          </div>
 
+          {/* 구멍 */}
+          <div className="absolute top-0 left-0 right-0 flex justify-center gap-4 -translate-y-2">
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className="w-3 h-5 rounded-full" 
+                style={{ backgroundColor: '#fdfcfa', border: '1.5px solid #00000015' }} />
+            ))}
+          </div>
+  
         {/* 질문 */}
         <h2 className={`font-black text-lg mb-3 ${theme.colors.textMain}`}>{`"${question}"`}</h2>
-
+  
         {/* 대답 */}
         <div
           className={`rounded-2xl p-4 transition-all duration-300 cursor-pointer ${theme.colors.inputBg}`}
@@ -89,10 +103,10 @@ function BasketCard({ y, m, d, text, theme, question }: {
             {text}
           </p>
         </div>
-
+  
         {/* 디바이더 */}
         <div className="w-full h-px my-3 bg-gray-200 opacity-50" />
-
+  
         {/* 날짜 및 기록완료 */}
         <div className="flex justify-between items-center">
           <span className={`font-bold text-sm ${theme.colors.textSub}`}>{y}년 {m + 1}월 {d}일</span>
@@ -101,42 +115,45 @@ function BasketCard({ y, m, d, text, theme, question }: {
           </span>
         </div>
       </div>
-
-      {/* 스프링 막대 */}
-      <div className={`absolute top-[-2px] left-6 right-6 h-2 rounded-full opacity-30 ${theme.colors.btn}`} />
     </div>
   );
 }
 
-function Header({ theme, userPhoto, onLogout, onBasket, onTitleClick }: { theme: (typeof MONTHLY_THEMES)[0]; userPhoto: string | null; onLogout: () => void; onBasket: () => void; onTitleClick: () => void; }) {
+function Header({ theme, userPhoto, onLogout, onTitleClick, isBasket, onToggleView }: { 
+  theme: (typeof MONTHLY_THEMES)[0]; 
+  userPhoto: string | null; 
+  onLogout: () => void;
+  onTitleClick: () => void;
+  isBasket: boolean;
+  onToggleView: () => void;
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
-      {/* 바깥 클릭 감지 오버레이 */}
       {isMenuOpen && (
-  <div 
-    className="fixed inset-0 z-40" 
-    onClick={() => setIsMenuOpen(false)}
-    onTouchStart={() => setIsMenuOpen(false)}
-  />
-)}
+        <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} onTouchStart={() => setIsMenuOpen(false)} />
+      )}
       <div className="flex justify-between items-center mb-6 px-2 mt-4 relative z-50">
-        <h1 onClick={onTitleClick}
-          className={`text-2xl font-extrabold transition-colors duration-500 ${theme.colors.textMain}`}>일기장 {theme.emoji}
-          </h1>
-        <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400 cursor-pointer hover:shadow-md transition overflow-hidden border-2 border-transparent">
-          {userPhoto ? <img src={userPhoto} alt="profile" className="w-full h-full object-cover" /> : "👤"}
+        <h1 onClick={onTitleClick} className={`text-2xl font-extrabold cursor-pointer transition-colors duration-500 ${theme.colors.textMain}`}>
+          일기장 {theme.emoji}
+        </h1>
+        <div className="flex items-center gap-6">
+          {/* 토글 버튼 */}
+          <button onClick={onToggleView} className={`text-2xl transition ${theme.colors.textSub}`}>
+            {isBasket ? <CalendarDays size={22} /> : <Server size={22} />}
+          </button>
+          {/* 프로필 */}
+          <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400 cursor-pointer hover:shadow-md transition overflow-hidden">
+            {userPhoto ? <img src={userPhoto} alt="profile" className="w-full h-full object-cover" /> : "👤"}
+          </div>
         </div>
         {isMenuOpen && (
-  <div className="absolute right-0 top-14 bg-white border border-gray-100 shadow-lg rounded-2xl p-2 w-36 flex flex-col gap-1 z-50">
-    <button onClick={() => { setIsMenuOpen(false); onBasket(); }} className="w-full text-center px-4 py-2 text-sm font-bold hover:bg-rose-50 rounded-xl transition">
-      🧺 과일 바구니
-    </button>
-    <button onClick={() => { setIsMenuOpen(false); onLogout(); }} className="w-full text-center px-4 py-2 text-sm text-red-500 font-bold hover:bg-red-50 rounded-xl transition">
-      🚪 로그아웃 
-    </button>
-  </div>
-)}
+          <div className="absolute right-0 top-14 bg-white border border-gray-100 shadow-lg rounded-2xl p-2 w-36 flex flex-col gap-1 z-50">
+            <button onClick={() => { setIsMenuOpen(false); onLogout(); }} className="w-full text-center px-4 py-2 text-sm text-red-500 font-bold hover:bg-red-50 rounded-xl transition">
+              🚪 로그아웃
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
@@ -557,87 +574,71 @@ export default function App() {
     );
   }
 
-  // 과일 바구니 화면
-  if (showBasket) {
-    const sortedDiaries = Object.entries(diaries)
-      .sort(([a], [b]) => {
-        const [ay, am, ad] = a.split('-').map(Number);
-        const [by, bm, bd] = b.split('-').map(Number);
-        return new Date(by, bm, bd).getTime() - new Date(ay, am, ad).getTime();
-      });
+  // 메인 화면
+  return (
+    <div className={`min-h-screen text-gray-800 transition-colors duration-500 ${MONTHLY_THEMES[viewingMonth].colors.bg}`}>
   
-    return (
-      <div className="min-h-screen text-gray-800" style={{ backgroundColor: '#fdfcfa' }}>
-  {/* 헤더 */}
-  <div className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#8B6343', paddingTop: 'env(safe-area-inset-top)' }}>
-    <div className="px-4 flex items-center py-4 relative">
-      <button onClick={() => setShowBasket(false)} className="font-bold text-xl text-white absolute left-4">＜</button>
-      <h1 className="text-2xl font-extrabold text-white w-full text-center">과일 바구니</h1>
-    </div>
-  </div>
+      {/* 공통 헤더 */}
+      <div className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${MONTHLY_THEMES[viewingMonth].colors.bg}`}
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="px-4">
+          <Header 
+            theme={MONTHLY_THEMES[viewingMonth]} 
+            userPhoto={userPhoto} 
+            onLogout={handleLogout}
+            onTitleClick={() => changeMonthAndSelectDate(REAL_YEAR, REAL_MONTH)}
+            isBasket={showBasket}
+            onToggleView={() => setShowBasket(!showBasket)}
+          />       
+        </div>
+      </div>
   
-        {/* 카드 목록 */}
+      {showBasket ? (
+        /* 바구니 뷰 */
         <div className="px-4 flex flex-col items-center"
-          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 90px)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 70px)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
           <div className="w-full max-w-md flex flex-col gap-4">
-            {sortedDiaries.length === 0 ? (
-              <p className={`text-center mt-20 ${MONTHLY_THEMES[REAL_MONTH].colors.textSub}`}>아직 기록이 없어요 🥲</p>
-            ) : (
-              sortedDiaries.map(([dateKey, text]) => {
+            {Object.entries(diaries)
+              .sort(([a], [b]) => {
+                const [ay, am, ad] = a.split('-').map(Number);
+                const [by, bm, bd] = b.split('-').map(Number);
+                return new Date(by, bm, bd).getTime() - new Date(ay, am, ad).getTime();
+              })
+              .map(([dateKey, text]) => {
                 const [y, m, d] = dateKey.split('-').map(Number);
-                const themeIndex = Math.max(0, Math.min(m , 11));
+                const themeIndex = Math.max(0, Math.min(m, 11));
                 const theme = MONTHLY_THEMES[themeIndex];
                 const question = MONTHLY_QUESTIONS[d - 1] || "오늘의 질문";
                 return (
                   <BasketCard key={dateKey} y={y} m={m} d={d} text={text} theme={theme} question={question} />
                 );
-              })
-            )}
+              })}
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // 메인 화면
-  return (
-    <div className={`min-h-screen text-gray-800 transition-colors duration-500 ${MONTHLY_THEMES[viewingMonth].colors.bg}`}>
-  
-      {/* 헤더 고정 — safe area 포함 */}
-      <div className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${MONTHLY_THEMES[viewingMonth].colors.bg}`}
-        style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="px-4">
-        <Header 
-          theme={MONTHLY_THEMES[viewingMonth]} 
-          userPhoto={userPhoto} onLogout={handleLogout}
-          onBasket={() => setShowBasket(true)} 
-          onTitleClick={() => changeMonthAndSelectDate(REAL_YEAR, REAL_MONTH)}
-        />        
+      ) : (
+        /* 캘린더 뷰 */
+        <div className="px-4 flex flex-col items-center"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 80px)' }}>
+          <div className="w-full max-w-md"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
+            <DetailCard
+              key={`${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`}
+              selectedDate={selectedDate}
+              initialText={diaries[`${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`] || ""}
+              onSave={handleSaveDiary}
+            />
+            <CalendarGrid
+              viewingYear={viewingYear}
+              viewingMonth={viewingMonth}
+              onPrevMonth={handlePrevMonth}
+              onNextMonth={handleNextMonth}
+              selectedDate={selectedDate}
+              diaries={diaries}
+              onDateClick={(dateInfo) => setSelectedDate(dateInfo)}
+            />
+          </div>
         </div>
-      </div>
-  
-      {/* 스크롤 콘텐츠 — 헤더 높이만큼 밀어내기 */}
-      <div className="px-4 flex flex-col items-center"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 80px)' }}>
-        <div className="w-full max-w-md"
-          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 2rem)' }}>
-          <DetailCard
-            key={`${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`}
-            selectedDate={selectedDate}
-            initialText={diaries[`${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`] || ""}
-            onSave={handleSaveDiary}
-          />
-          <CalendarGrid
-            viewingYear={viewingYear}
-            viewingMonth={viewingMonth}
-            onPrevMonth={handlePrevMonth}
-            onNextMonth={handleNextMonth}
-            selectedDate={selectedDate}
-            diaries={diaries}
-            onDateClick={(dateInfo) => setSelectedDate(dateInfo)}
-          />
-        </div>
-      </div>
+      )}
   
     </div>
   );
