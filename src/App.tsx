@@ -72,7 +72,6 @@ function BasketCard({ y, m, d, text, theme, question }: {
         style={{ backgroundColor: '#fdfcfa',
           filter: 'url(#wobble)'
         }}
-        
         >
         
         {/* 구멍 뚫린 종이 상단 */}
@@ -252,7 +251,7 @@ useEffect(() => {
             </span>
           )}
         </div>
-      <div className={`rounded-3xl p-5 py-3 shadow-sm mb-6 border transition-all duration-300 transform ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa' }}>
+      <div className={`rounded-3xl p-5 py-3 shadow-sm mb-6 border transition-all duration-300 transform ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa', filter: 'url(#wobble)' }}>
         
         {/* 디바이더 */}
         {/* <div className={`w-full h-px mb-1 transition-colors duration-500 text-gray-400 bg-current opacity-30`} /> */}
@@ -316,7 +315,7 @@ function CalendarGrid({ viewingYear, viewingMonth, onPrevMonth, onNextMonth, onD
   }
 
   return (
-<div className={`relative rounded-3xl p-5 shadow-sm border transition-colors duration-500 ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa' }}>
+<div className={`relative rounded-3xl p-5 shadow-sm border transition-colors duration-500 ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa', filter: 'url(#wobble)' }}>
 
 {/* 삐뚤빼뚤 선 오버레이 */}
 <svg className="absolute inset-0 w-full h-full pointer-events-none rounded-3xl overflow-hidden" 
