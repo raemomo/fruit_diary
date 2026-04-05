@@ -34,7 +34,7 @@ const MONTHLY_THEMES = [
   { month: 9, name: "배", emoji: "🍐", eng: "SEPTEMBER", colors: THEME_COLORS.lime },
   { month: 10, name: "사과", emoji: "🍎", eng: "OCTOBER", colors: THEME_COLORS.red },
   { month: 11, name: "블루베리", emoji: "🫐", eng: "NOVEMBER", colors: THEME_COLORS.indigo },
-  { month: 12, name: "파인애플", emoji: "🍍", eng: "DECEMBER", colors: THEME_COLORS.yellow },
+  { month: 12, name: "단호박", emoji: "🎃", eng: "DECEMBER", colors: THEME_COLORS.yellow },
 ];
 
 const MONTHLY_QUESTIONS: string[] = [
@@ -171,8 +171,8 @@ function DetailCard({ selectedDate, initialText, onSave }: { selectedDate: DateI
   // selectedDate.month === REAL_MONTH && 
   // selectedDate.date === REAL_DATE - 1;
   // 여기가 모든 게시물 수정으로 할지 오늘만 할지 결정하는 변수
-  const isEditable = true; 
-  // selectedDate.isToday 
+  // const isEditable = true; 
+  const isEditable = selectedDate.isToday 
   // || isYesterday;  
   const theme = selectedDate.theme;
   const dateKey = `${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`;
@@ -300,19 +300,26 @@ function CalendarGrid({ viewingYear, viewingMonth, onPrevMonth, onNextMonth, onD
   const isCurrentMonth = viewingYear === REAL_YEAR && viewingMonth === REAL_MONTH;
   const canGoNext = viewingYear < REAL_YEAR || viewingMonth < REAL_MONTH;
   const daysInMonth = new Date(viewingYear, viewingMonth + 1, 0).getDate();
-  const days: DateInfo[] = [];
-  const weeks = Math.ceil(daysInMonth / 7);
+  const firstDayOfMonth = new Date(viewingYear, viewingMonth, 1).getDay(); // 0=일, 1=월, ...
+  const days: (DateInfo | null)[] = [];
+
+  const weeks = Math.ceil((daysInMonth + firstDayOfMonth) / 7);
   const svgHeight = 60 + weeks * 52 + 20;
 
-  for (let i = 1; i <= daysInMonth; i++) {
-    let isPast = false; let isToday = false;
-    if (viewingYear < REAL_YEAR || (viewingYear === REAL_YEAR && viewingMonth < REAL_MONTH)) {
-      isPast = true;
-    } else if (isCurrentMonth) {
-      isPast = i < REAL_DATE; isToday = i === REAL_DATE;
-    }
-    days.push({ year: viewingYear, month: viewingMonth, date: i, question: MONTHLY_QUESTIONS[i - 1] || "오늘의 질문이 없습니다.", isPast, isToday, theme });
+ // 1일 전에 빈 칸 채우기
+for (let i = 0; i < firstDayOfMonth; i++) {
+  days.push(null);
+}
+
+for (let i = 1; i <= daysInMonth; i++) {
+  let isPast = false; let isToday = false;
+  if (viewingYear < REAL_YEAR || (viewingYear === REAL_YEAR && viewingMonth < REAL_MONTH)) {
+    isPast = true;
+  } else if (isCurrentMonth) {
+    isPast = i < REAL_DATE; isToday = i === REAL_DATE;
   }
+  days.push({ year: viewingYear, month: viewingMonth, date: i, question: MONTHLY_QUESTIONS[i - 1] || "오늘의 질문이 없습니다.", isPast, isToday, theme });
+}
 
   return (
 <div className={`relative rounded-3xl p-5 shadow-sm border transition-colors duration-500 ${theme.colors.border}`} style={{ backgroundColor: '#fdfcfa', filter: 'url(#wobble)' }}>
@@ -365,26 +372,27 @@ function CalendarGrid({ viewingYear, viewingMonth, onPrevMonth, onNextMonth, onD
       </div>
       
       <div className="grid grid-cols-7 gap-x-1 gap-y-2 text-center">
-        {days.map((dayObj) => {
+        {days.map((dayObj, idx) => {
+          if (!dayObj) return <div key={`empty-${idx}`} />;
           const dateKey = `${dayObj.year}-${dayObj.month}-${dayObj.date}`;
           const isRecorded = !!diaries[dateKey];
           const isSelected = selectedDate.year === dayObj.year && selectedDate.month === dayObj.month && selectedDate.date === dayObj.date;
           return (
             <div key={dayObj.date} onClick={() => onDateClick(dayObj)} className="flex flex-col items-center gap-1 cursor-pointer transition-transform hover:scale-110">
-  <div className="relative flex items-center justify-center w-9 h-9">
-    {dayObj.isToday && (
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 36 36">
-        <path
-          d={wobblyCircle(dayObj.date + 100)}
-          fill="none"
-          stroke="#f43f5e"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.7"
-        />
-      </svg>
-    )}
+              <div className="relative flex items-center justify-center w-9 h-9">
+                {dayObj.isToday && (
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 36 36">
+                    <path
+                      d={wobblyCircle(dayObj.date + 100)}
+                      fill="none"
+                      stroke="#f43f5e"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      opacity="0.7"
+                    />
+                  </svg>
+                )}
     {/* {isSelected && !dayObj.isToday && (
       <div className={`absolute inset-0 rounded-full ${theme.colors.accentBg}`} />
     )} */}
