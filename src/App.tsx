@@ -172,8 +172,11 @@ function DetailCard({ selectedDate, initialText, onSave }: { selectedDate: DateI
   // selectedDate.date === REAL_DATE - 1;
   // 여기가 모든 게시물 수정으로 할지 오늘만 할지 결정하는 변수
   // const isEditable = true; 
-  const isEditable = selectedDate.isToday 
-  // || isYesterday;  
+  const isYesterday = 
+    selectedDate.year === REAL_YEAR && 
+    selectedDate.month === REAL_MONTH && 
+    selectedDate.date === REAL_DATE - 1;  
+  const isEditable = selectedDate.isToday || isYesterday
   const theme = selectedDate.theme;
   const dateKey = `${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`;
   const isModified = text !== initialText;
@@ -303,8 +306,8 @@ function CalendarGrid({ viewingYear, viewingMonth, onPrevMonth, onNextMonth, onD
   const firstDayOfMonth = new Date(viewingYear, viewingMonth, 1).getDay(); // 0=일, 1=월, ...
   const days: (DateInfo | null)[] = [];
 
-  const weeks = Math.ceil((daysInMonth + firstDayOfMonth) / 7);
-  const svgHeight = 60 + weeks * 52 + 20;
+const weeks = Math.ceil((daysInMonth + firstDayOfMonth) / 7);
+  const svgHeight = 60 + weeks * 40 + 20;
 
  // 1일 전에 빈 칸 채우기
 for (let i = 0; i < firstDayOfMonth; i++) {
@@ -328,21 +331,18 @@ for (let i = 1; i <= daysInMonth; i++) {
 <svg className="absolute inset-0 w-full h-full pointer-events-none rounded-3xl overflow-hidden" 
   viewBox={`0 0 340 ${svgHeight}`} 
   preserveAspectRatio="none">
-  {/* 가로줄 */}
-  <path d="M 8,70 Q 100,67 180,71 Q 260,75 332,69" stroke="#00000018" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-  {/* 가로줄 5개 추가 — 각 주 사이 */}
-  {Array.from({ length: Math.ceil(daysInMonth / 7) + 1 }).map((_, i) => {
-  const gap = 47; // ← 이 숫자 하나만 조절
-  const totalHeight = svgHeight;
-  const startY = totalHeight / 2 - (Math.ceil(daysInMonth / 7) / 2) * gap;
-  const y = startY + (i + 1) * gap;
-  return (
-    <path key={i}
-      d={`M 8,${y} Q 100,${y + (i%2===0?2:-2)} 180,${y+1} Q 260,${y + (i%2===0?-1:2)} 332,${y}`}
-      stroke="#00000018" strokeWidth="1.2" fill="none" strokeLinecap="round"
-    />
-  );
-})}
+  {/* 요일/날짜 구분 가로줄 */}
+  <path d={`M 8,74 Q 100,71 180,75 Q 260,76 332,73`} stroke="#00000018" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+  {/* 각 주 사이 가로줄 — weeks 기반으로 자동 계산 */}
+  {Array.from({ length: weeks - 1 }).map((_, i) => {
+    const y = 74 + (i + 1) * ((svgHeight - 74) / weeks);
+    return (
+      <path key={i}
+        d={`M 8,${y} Q 100,${y + (i%2===0?2:-2)} 180,${y+1} Q 260,${y + (i%2===0?-1:2)} 332,${y}`}
+        stroke="#00000018" strokeWidth="1.2" fill="none" strokeLinecap="round"
+      />
+    );
+  })}
   {/* 세로줄 6개 */}
   {[1,2,3,4,5,6].map((i) => {
   const center = 170; // 340/2
